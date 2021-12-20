@@ -50,9 +50,16 @@ App = {
   },
 
   initContract: function() {
-    /*
-     * Replace me...
-     */
+    $.getJSON('Adoption.json', (data) => {
+      // Get the necessary contract artifact file and instantiate it with @truffle/contract
+      App.contracts.Adoption = TruffleContract(data);
+
+      // Set the provider for our contract
+      App.contracts.Adoption.setProvider(App.web3Provider);
+
+      // Use our contract to retrieve and mark the adopted pets
+      return App.markAdopted()
+    });
 
     return App.bindEvents();
   },
