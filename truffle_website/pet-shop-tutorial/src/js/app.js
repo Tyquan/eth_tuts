@@ -70,9 +70,10 @@ App = {
 
   markAdopted: function() {
     let adoptionInstance;
-    // access the deployed Adoption contract
+    // access the deployed Adoption smart contract
     App.contracts.Adoption.deployed()
     .then((instance) => {
+      // store the contract instance in a variable
       adoptionInstance = instance;
       // use call() to read data without having to send a full transaction,
       // we wont have to spend any ether
@@ -96,9 +97,33 @@ App = {
 
     var petId = parseInt($(event.target).data('id'));
 
-    /*
-     * Replace me...
-     */
+    let adoptionInstance;
+
+    // get the users account
+    web3.eth.getAccounts((error, accounts) => {
+      if (err) console.error(error);
+
+      let account = accounts[0];
+
+      // access the deployed Adoption smart contract
+      App.contracts.Adoption.deployed()
+        .then((instance) => {
+          // store the contract instance in a variable
+          adoptionInstance = instance;
+
+          // Execute adopt as a transaction by sending account
+          return adoptionInstance.adopt(petId, {from: account});
+        })
+        .then((result) => {
+          // the result of sending a transaction is the transaction object
+          // if no errors call markAdopted() to sync the UI winth the newly stored data
+          return App.markAdopted();
+        })
+        .catch((err) => {
+          console.error(err.message);
+        });
+
+    });
   }
 
 };
