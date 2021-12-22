@@ -69,9 +69,26 @@ App = {
   },
 
   markAdopted: function() {
-    /*
-     * Replace me...
-     */
+    let adoptionInstance;
+    // access the deployed Adoption contract
+    App.contracts.Adoption.deployed()
+    .then((instance) => {
+      adoptionInstance = instance;
+      // use call() to read data without having to send a full transaction,
+      // we wont have to spend any ether
+      return adoptionInstance.getAdopters.call();
+    }).then((adopters) => {
+      // loop through all adopters checking yo see if an address us stored for each pet
+      for(let i = 0; i < adopters.length; i++){
+        // if the adopter slot is not empty nor available
+        if(adopters[i] !== '0x0000000000000000000000000000000000000000'){
+          // disable that pets adopt button and change the button text to "Success"
+          $('.panel-pet').eq(i).find('button').text('Success').attr('disabled', true);
+        }
+      }
+    }).catch((err) => {
+      console.error(err.message);
+    });
   },
 
   handleAdopt: function(event) {
