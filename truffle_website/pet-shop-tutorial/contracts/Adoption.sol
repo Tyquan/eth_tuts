@@ -6,7 +6,11 @@ contract Adoption {
 
     // Adopting a pet
     function adopt(uint petId) public returns (uint) {
-        require(petId >= 0 && petId <= 15); // the petId must be between 0 and 15 because we only have 16 adopters slots available and 16 pets available
+        // the petId must be between 0 and 15 because we only have 16 adopters slots available and 16 pets available
+        require(
+            petId >= 0 && petId <= 15,
+            "ran out of PetIds"
+        );
 
         adopters[petId] = msg.sender; // msg.sender is the address of the person or smart contract that is using this function
 
@@ -15,7 +19,8 @@ contract Adoption {
 
     // Retrieving the adopters (return the entire array of adopters addresses)
     // the memory keyword gives the data location of the variable
-    function getAdopters() public view returns (address[16] memory) { // the view keyword means that the function will not modify the state of the contract
+    // the view keyword means that the function will not modify the state of the contract
+    function getAdopters() public view returns (address[16] memory) {
         // since adopters is already declared, we can simply return it
         return adopters;
     }
