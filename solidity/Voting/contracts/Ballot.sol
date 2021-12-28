@@ -80,4 +80,17 @@ contract Ballot {
             _delegate.weight += sender.weight;
         }
     }
+
+    // Give a vote
+    function vote(uint proposal) external {
+        Voter storage sender = voters[msg.sender];
+        require(sender.weight != 0, "Has no right to vote");
+        require(!sender.voted, "Already voted.");
+        sender.voted = true;
+        sender.vote = proposal;
+        // If `proposal` is out of the range of the array,
+        // this will throw automatically and revert all
+        // changes.
+        proposals[proposal].voteCount += sender.weight;
+    }
 }
