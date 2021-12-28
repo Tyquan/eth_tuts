@@ -48,5 +48,36 @@ contract Ballot {
         voters[voter].weight = 1;
     }
 
-    
+    // Delegate your vote to the voter
+    function delegate(address to) external {
+        Voter storage sender = voters[msg.sender];
+        require(!sender.voted, "You already voted");
+
+        require(to != msg.sender, "Self-delegation is disallowed");
+        // Forward the delegation as long as
+        // `to` also delegated.
+        // In general, such loops are very dangerous,
+        // because if they run too long, they might
+        // need more gas than is available in a block.
+        // In this case, the delegation will not be executed,
+        // but in other situations, such loops might
+        // cause a contract to get "stuck" completely.
+        while (voters[to].delegate != address(0)) {
+            to = voters[to].delegate;
+
+            // We found a loop in the delegation, not allowed.
+            require(to != msg.sender, "Found loop in delegation. Not allowed.");
+        }
+
+        sender.voted = true;
+        sender.delegate = to;
+        Voter storage _delegate = voters[to];
+        if (_delegate.voted) {
+            // If the delegate already voted,
+            // directly add to the number of votes
+            proposals[_delegate.vote].voteCount += sender.weight;
+        } else {
+            _delegate.weight += sender.weight;
+        }
+    }
 }
