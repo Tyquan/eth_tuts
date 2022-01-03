@@ -49,11 +49,12 @@ contract Ballot {
     }
 
     // Delegate your vote to the voter
-    function delegate(address to) external {
+    function delegateVote(address to) external {
+        address receiver = to;
         Voter storage sender = voters[msg.sender];
         require(!sender.voted, "You already voted");
 
-        require(to != msg.sender, "Self-delegation is disallowed");
+        require(receiver != msg.sender, "Self-delegation is disallowed");
         // Forward the delegation as long as
         // `to` also delegated.
         // In general, such loops are very dangerous,
@@ -62,16 +63,16 @@ contract Ballot {
         // In this case, the delegation will not be executed,
         // but in other situations, such loops might
         // cause a contract to get "stuck" completely.
-        while (voters[to].delegate != address(0)) {
-            to = voters[to].delegate;
+        while (voters[receiver].delegate != address(0)) {
+            receiver = voters[receiver].delegate;
 
             // We found a loop in the delegation, not allowed.
-            require(to != msg.sender, "Found loop in delegation. Not allowed.");
+            require(receiver != msg.sender, "Found loop in delegation. Not allowed.");
         }
 
         sender.voted = true;
-        sender.delegate = to;
-        Voter storage _delegate = voters[to];
+        sender.delegate = receiver;
+        Voter storage _delegate = voters[receiver];
         if (_delegate.voted) {
             // If the delegate already voted,
             // directly add to the number of votes
@@ -94,7 +95,7 @@ contract Ballot {
         proposals[proposal].voteCount += sender.weight;
     }
 
-    /// @dev Computes the winning proposal taking all
+    /// Computes the winning proposal taking all
     /// previous votes into account.
     function winningProposal() public view returns (uint _winningProposal) {
         uint winningVoteCount = 0;

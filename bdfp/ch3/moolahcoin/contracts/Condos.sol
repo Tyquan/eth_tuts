@@ -1,50 +1,29 @@
-// SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+// SPDX-License-Identifier: GPL-3.0
+pragma solidity >=0.4.16 <0.9.0;
 
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
-import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
-import "@openzeppelin/contracts/utils/Counters.sol";
 
 contract Condos is ERC721 {
-    // Setup like a game Nft
-    using Counters for Counters.Counter;
-    Counters.Counter private _tokenIds;
 
-    //string name = ;
-    //string symbol = ;
+    uint256 public _tokenId;
 
     mapping(address => uint256) public MDTrack;
 
     constructor() ERC721("CondosItem", "CND") {
-        //_burn(_tokenIds);
-    }
-    /*
-    function createNFT(address receiver, string memory tokenURI) public returns (uint256)
-    {
-        _tokenIds.increment();
-
-        uint newItemId = _tokenIds.current();
-        _mint(receiver, newItemId);
-        _setTokenURI(newItemId, tokenURI);
-
-        MDTrack[receiver] = newItemId;
-
-        return newItemId;
+        _tokenId = 0;
     }
 
-    
-    function transferNFT(address sender, address receiver, uint256 transId, string memory tokenURI) external payable returns (bool)
-    {
-        transferFrom(sender, receiver, transId);
-        _setTokenURI(transId, tokenURI);
+    function createNFT(address receiver) external returns (uint256) {
+        _tokenId++;
+        _mint(receiver, _tokenId);
+        return _tokenId;
+    }
 
+    function transferNFT(address sender, address receiver, uint256 tokenId) external payable returns (uint256) {
+        transferFrom(sender, receiver, tokenId);
         delete MDTrack[sender];
-
-        MDTrack[receiver] = _tokenIds.current();
-
-        return true;
+        MDTrack[receiver] = _tokenId;
+        return _tokenId;
     }
-
-    */
 
 }

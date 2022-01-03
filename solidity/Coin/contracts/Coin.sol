@@ -20,7 +20,7 @@ contract Coin {
     }
 
     // why this contract would fail
-    error InsufficientBalance(uint requested, uint available);
+    error InsufficientBalance(uint requested, uint available, "No Balance");
 
     // allow addresses to send coins to one another
     function send(address receiver, uint amount) public {
