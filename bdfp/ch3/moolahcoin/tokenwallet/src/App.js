@@ -1,4 +1,5 @@
 import React from 'react';
+import Web3 from 'web3';
 import InstallMetamask from './Components/Core/InstallMetamask';
 import "./App.css";
 
@@ -36,10 +37,23 @@ class App extends React.Component
     };
   }
 
+  componentDidMount() {
+    this.loadEthData();
+  }
+
+  async loadEthData() {
+    const web3 = new Web3(Web3.givenProvider || "http://localhost:8545");
+    const accounts = await web3.eth.getAccounts();
+    this.setState({ account: accounts[0] });
+  }
+
   render() {
     if (this.isWeb3) {
       return (
-        <h1>Web3 Available! Start Coding</h1>
+        <div>
+          <h1>Web3 Available! Start Coding</h1>
+          <p>Your Acoount: {this.state.account}</p>
+        </div>
       );
     } else {
       return (
